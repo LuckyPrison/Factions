@@ -1,9 +1,8 @@
 package com.massivecraft.factions.listeners;
 
-import com.massivecraft.factions.*;
-import com.massivecraft.factions.integration.Worldguard;
-import com.massivecraft.factions.struct.Permission;
-import com.massivecraft.factions.struct.Relation;
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,7 +10,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
+
+import com.massivecraft.factions.Board;
+import com.massivecraft.factions.Conf;
+import com.massivecraft.factions.FLocation;
+import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
+import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.P;
+import com.massivecraft.factions.integration.Worldguard;
+import com.massivecraft.factions.struct.Permission;
+import com.massivecraft.factions.struct.Relation;
+import com.ulfric.lib.api.inventory.ItemUtils;
 
 
 public class FactionsBlockListener implements Listener {
@@ -244,6 +261,21 @@ public class FactionsBlockListener implements Listener {
 
         // cancel building/destroying in other territory?
         if (deny) {
+        	// Allow farm raiding
+        	ItemStack item = player.getItemInHand();
+
+        	if (item != null && FactionsBlockListener.HOES.contains(item.getType()))
+        	{
+        		Block block = location.getBlock();
+
+        		if (block != null && FactionsBlockListener.CROPS.contains(block.getType()))
+        		{
+        			ItemUtils.decrementHand(player);
+
+        			return true;
+        		}
+        	}
+
             if (!justCheck) {
                 me.msg("<b>You can't " + action + " in the territory of " + otherFaction.getTag(myFaction));
             }
@@ -271,4 +303,21 @@ public class FactionsBlockListener implements Listener {
 
         return true;
     }
+
+    private static final Set<Material> HOES;
+    private static final Set<Material> CROPS = EnumSet.of(Material.SUGAR_CANE_BLOCK, Material.CROPS, Material.NETHER_WARTS, Material.CARROT, Material.CACTUS, Material.POTATO, Material.PUMPKIN, Material.MELON_BLOCK, Material.MELON_STEM, Material.PUMPKIN_STEM, Material.SAPLING, Material.WATER_LILY);
+    static
+    {
+    	HOES = EnumSet.noneOf(Material.class);
+
+    	for (Material material : Material.values())
+    	{
+    		if (material.isBlock()) continue;
+
+    		if (!material.name().endsWith("_HOE")) continue;
+
+    		FactionsBlockListener.HOES.add(material);
+    	}
+    }
+
 }

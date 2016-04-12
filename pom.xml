@@ -78,6 +78,12 @@
             <version>1.8.4-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>com.ulfric.lib</groupId>
+            <artifactId>Lib</artifactId>
+            <version>1.0.68</version>
+        <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.5</version>
