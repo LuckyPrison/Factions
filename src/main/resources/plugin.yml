@@ -7,7 +7,7 @@ depend: [Lib]
 commands:
   factions:
     description: Reference command for Factions.
-    aliases: [f]
+    aliases: [f, fac]
 permissions:
   factions.kit.admin:
     description: All faction permissions.
